@@ -34,33 +34,4 @@ public interface ILoadableScript {
         isInitialized = true;
     }
     */
-
-    /**
-        In corresponding IDependentScript
-        public class PlayerController2D : MonoBehaviour, IDependentScript {
-            bool propulsionLoaded;
-
-            void Start() {
-                ...
-                List<ILoadableScript> dependencies = new List<ILoadableScript>();
-                dependencies.Add(propulsion);
-                ScriptDependencyManager.Instance.UpdateDependencyDicts(this, dependencies);
-                propulsionLoaded = propulsion.IsInitialized();;
-            }
-
-            void FixedUpdate() {
-                if (!propulsionLoaded) {
-                    return;
-                }
-                ...
-            }
-
-            public void OnAllDependenciesLoaded() {
-                propulsionLoaded = true;
-            }
-            ...
-        }
-
-        OR use the Unity editor (preferred)
-    */
 }

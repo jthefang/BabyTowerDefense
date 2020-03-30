@@ -5,6 +5,19 @@ using UnityEngine.Tilemaps;
 
 public class TilemapInitialization : MonoBehaviour, IDependentScript
 {
+    #region IDependentScript
+    void AddDependencies() {
+        List<ILoadableScript> dependencies = new List<ILoadableScript>();
+        dependencies.Add(tilemapInfo);
+        dependencies.Add(tiles);
+        ScriptDependencyManager.Instance.UpdateDependencyDicts(this, dependencies);
+    }
+
+    public void OnAllDependenciesLoaded() {
+        Init();
+    }
+    #endregion
+    
     [SerializeField]
     GameObject doorPrefab;
 
@@ -16,15 +29,7 @@ public class TilemapInitialization : MonoBehaviour, IDependentScript
         tilemapInfo = TilemapInfo.Instance;
         tiles = Tiles.Instance;
         tilemap = tilemapInfo.GetTilemap();
-
-        List<ILoadableScript> dependencies = new List<ILoadableScript>();
-        dependencies.Add(tilemapInfo);
-        dependencies.Add(tiles);
-        ScriptDependencyManager.Instance.UpdateDependencyDicts(this, dependencies);
-    }
-
-    public void OnAllDependenciesLoaded() {
-        Init();
+        AddDependencies();
     }
 
     void Init() {
@@ -40,9 +45,6 @@ public class TilemapInitialization : MonoBehaviour, IDependentScript
     void InitFloor() {
         Vector2Int bottomLeft = tilemapInfo.GetBottomLeftCornerTilePosition();
         Vector2Int topRight = tilemapInfo.GetTopRightCornerTilePosition();
-
-        Debug.Log("Bottom left: " + bottomLeft);
-        Debug.Log("Top right: " + topRight);
         for (int r = bottomLeft.y; r < topRight.y; r++) {
             for (int c = bottomLeft.x; c < topRight.x; c++) {
                 Vector3Int tilePosition = new Vector3Int(c, r, 0);
@@ -57,6 +59,8 @@ public class TilemapInitialization : MonoBehaviour, IDependentScript
         Possible door tile positions include any position on the top/bot rows and left/right cols
     */
     void InitDoors() {
+        List<Door> doors = new List<Door>();
+
         Vector2Int bottomLeft = tilemapInfo.GetBottomLeftCornerTilePosition();
         Vector2Int topRight = tilemapInfo.GetTopRightCornerTilePosition();
         for (int i = 0; i < tilemapInfo.NumDoors; i++) {
@@ -80,8 +84,12 @@ public class TilemapInitialization : MonoBehaviour, IDependentScript
             }
 
             Vector3Int doorTilePosition = new Vector3Int(col, row, 0);
-            Door newDoor = InitDoorAt(tilemapInfo.GetWorldCoordinatesOfTilePosition(doorTilePosition));
+            Vector3 doorWorldPosition = tilemapInfo.GetWorldCoordinatesOfTilePosition(doorTilePosition);
+            Door newDoor = InitDoorAt(doorWorldPosition);
+            doors.Add(newDoor);
         }
+
+        tilemapInfo.SetDoors(doors);
     }
 
     Door InitDoorAt(Vector3 position) {

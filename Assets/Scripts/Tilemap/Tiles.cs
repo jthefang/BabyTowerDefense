@@ -6,6 +6,22 @@ using System;
 
 public class Tiles : MonoBehaviour, ILoadableScript
 {
+    [Serializable]
+    public class Tile {
+        [SerializeField]
+        string name;
+        [SerializeField]
+        TileBase tile;
+
+        public string GetName() {
+            return name;
+        }
+
+        public TileBase GetTile() {
+            return tile;
+        }
+    }
+
     #region Singleton
     public static Tiles Instance;
     void Awake() {
@@ -43,12 +59,6 @@ public class Tiles : MonoBehaviour, ILoadableScript
         isInitialized = true;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     void InitTileByNameDictionary() {
         tileByName = new Dictionary<string, TileBase>();
         foreach (Tile t in tiles) {
@@ -63,20 +73,4 @@ public class Tiles : MonoBehaviour, ILoadableScript
         return tileByName[tileName];
     }
 
-}
-
-[Serializable]
-public class Tile {
-    [SerializeField]
-    string name;
-    [SerializeField]
-    TileBase tile;
-
-    public string GetName() {
-        return name;
-    }
-
-    public TileBase GetTile() {
-        return tile;
-    }
 }
