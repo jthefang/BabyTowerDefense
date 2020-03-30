@@ -23,7 +23,14 @@ public class SpriteManager : MonoBehaviour, ILoadableScript, IDependentScript
         return isInitialized;
     }
     #endregion
+
+    ObjectPooler objectPooler;
+    List<GameObject> activeSprites;
     
+    void Start() {
+        AddDependencies();
+    }
+
     #region IDependentScript
     protected virtual void AddDependencies() {
         List<ILoadableScript> dependencies = new List<ILoadableScript>();
@@ -36,9 +43,6 @@ public class SpriteManager : MonoBehaviour, ILoadableScript, IDependentScript
         isInitialized = true;
     }
     #endregion
-
-    ObjectPooler objectPooler;
-    List<GameObject> activeSprites;
 
     protected virtual void Init()
     {

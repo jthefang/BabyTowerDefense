@@ -280,11 +280,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pools:
-  - tag: Baby
-    prefab: {fileID: 2987881529254052330, guid: 071dba4bf39f5475c97cf3ef95392ef1,
+  - Tag: Baby
+    Prefab: {fileID: 2987881529254052330, guid: 071dba4bf39f5475c97cf3ef95392ef1,
       type: 3}
-    spriteManager: {fileID: 0}
-    size: 0
+    SpriteManager: {fileID: 1605554554}
+    MaxNumber: 20
 --- !u!4 &262892199
 Transform:
   m_ObjectHideFlags: 0

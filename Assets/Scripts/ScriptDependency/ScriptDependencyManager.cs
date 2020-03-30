@@ -20,11 +20,6 @@ public class ScriptDependencyManager : MonoBehaviour
 {
     #region Singleton
     public static ScriptDependencyManager Instance;
-    //reference this only version as ScriptDependencyManager.Instance
-
-    private void Awake() {
-        Instance = this;
-    }
     #endregion
 
     [SerializeField]
@@ -38,9 +33,9 @@ public class ScriptDependencyManager : MonoBehaviour
     // maps scripts --> scripts waiting on it to load
     Dictionary<ILoadableScript, List<IDependentScript>> reverseDependencyDict;
 
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
+        Instance = this;
         dependencyDictionary = new Dictionary<IDependentScript, List<ILoadableScript>>();
         reverseDependencyDict = new Dictionary<ILoadableScript, List<IDependentScript>>();
 
@@ -134,6 +129,7 @@ public class ScriptDependencyManager : MonoBehaviour
             }
         }
     }
+
 }
 
 [Serializable]

@@ -19,7 +19,6 @@ public interface IDependentScript {
 
         public void OnAllDependenciesLoaded() {
             Init();
-            isInitialized = true;
         }
         #endregion
 

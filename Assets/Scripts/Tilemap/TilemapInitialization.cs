@@ -2,22 +2,36 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using System;
 
-public class TilemapInitialization : MonoBehaviour, IDependentScript
-{
-    #region IDependentScript
-    void AddDependencies() {
-        List<ILoadableScript> dependencies = new List<ILoadableScript>();
-        dependencies.Add(tilemapInfo);
-        dependencies.Add(tiles);
-        ScriptDependencyManager.Instance.UpdateDependencyDicts(this, dependencies);
+public class TilemapInitialization : MonoBehaviour, IDependentScript, ILoadableScript
+{   
+    #region Singleton
+    public static TilemapInitialization Instance;
+    void Awake() {
+        Instance = this;
     }
+    #endregion 
 
-    public void OnAllDependenciesLoaded() {
-        Init();
+    #region ILoadableScript
+    public event Action<ILoadableScript> OnScriptInitialized;
+    bool _isInitialized = false;
+    bool isInitialized {
+        get {
+            return this._isInitialized;
+        }
+        set {
+            this._isInitialized = value;
+            if (this._isInitialized) {
+                OnScriptInitialized?.Invoke(this);
+            }
+        }   
+    }
+    public bool IsInitialized () {
+        return isInitialized;
     }
     #endregion
-    
+
     [SerializeField]
     GameObject doorPrefab;
 
@@ -29,14 +43,24 @@ public class TilemapInitialization : MonoBehaviour, IDependentScript
         tilemapInfo = TilemapInfo.Instance;
         tiles = Tiles.Instance;
         tilemap = tilemapInfo.GetTilemap();
+
         AddDependencies();
     }
 
-    void Init() {
-        InitTilemap();
+    #region IDependentScript
+    void AddDependencies() {
+        List<ILoadableScript> dependencies = new List<ILoadableScript>();
+        dependencies.Add(tilemapInfo);
+        dependencies.Add(tiles);
+        ScriptDependencyManager.Instance.UpdateDependencyDicts(this, dependencies);
     }
 
-    void InitTilemap() {
+    public void OnAllDependenciesLoaded() {
+        isInitialized = true;
+    }
+    #endregion
+
+    public void InitNewTilemap() {
         tilemap.ClearAllTiles();
         InitFloor();
         InitDoors();
@@ -64,8 +88,8 @@ public class TilemapInitialization : MonoBehaviour, IDependentScript
         Vector2Int bottomLeft = tilemapInfo.GetBottomLeftCornerTilePosition();
         Vector2Int topRight = tilemapInfo.GetTopRightCornerTilePosition();
         for (int i = 0; i < tilemapInfo.NumDoors; i++) {
-            int randRow = Random.Range(bottomLeft.y + 1, topRight.y - 1);
-            int randCol = Random.Range(bottomLeft.x + 1, topRight.x - 1);
+            int randRow = UnityEngine.Random.Range(bottomLeft.y + 1, topRight.y - 1);
+            int randCol = UnityEngine.Random.Range(bottomLeft.x + 1, topRight.x - 1);
             int row = randRow;
             int col = randCol;
             switch (i % 4) {
