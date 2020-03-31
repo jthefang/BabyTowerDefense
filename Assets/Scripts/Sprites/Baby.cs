@@ -2,27 +2,31 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Baby : MonoBehaviour
+public class Baby : MonoBehaviour, IPooledObject
 {
     Transform targetTransform;
     float speed;
     Animator animator;
 
-    GameManager gameManager;
+    BabyManager babyManager;
 
     // Start is called before the first frame update
     void Start()
     {
         animator = GetComponent<Animator>();
-        gameManager = GameManager.Instance;
-        gameManager.OnGameStart += OnGameStart;
     }
 
-    void OnGameStart() {
-        //temporary
-        SetSpeed(3f);
-        TargetRandomDoor();
+    #region IPooledObject
+    public void OnObjectInitiate(SpriteManager sm) {
+        babyManager = (BabyManager) sm;
+        this.transform.SetParent(sm.transform);
     }
+
+    public void OnObjectSpawn() {
+        SetSpeed(babyManager.BabySpeed);
+        TargetNearestDoor();
+    }
+    #endregion
 
     // Update is called once per frame
     void Update()
@@ -49,6 +53,25 @@ public class Baby : MonoBehaviour
 
         Door randDoor = doors[Random.Range(0, doors.Count)];
         SetTargetTransform(randDoor.gameObject.transform);
+    }
+
+    void TargetNearestDoor() {
+        List<Door> doors = TilemapInfo.Instance.Doors;
+        if (doors == null || doors.Count <= 0) {
+            return;
+        }
+
+        float minDistanceSoFar = -1;
+        Door minDistanceDoor = doors[0];
+        foreach (Door d in doors) {
+            float dist = Vector3.Distance(d.gameObject.transform.position, this.transform.position);
+            bool minDistNotInitialized = minDistanceSoFar < 0;
+            if (minDistNotInitialized || dist <= minDistanceSoFar) {
+                minDistanceSoFar = dist; 
+                minDistanceDoor = d;
+            }
+        }
+        SetTargetTransform(minDistanceDoor.gameObject.transform);
     }
 
     void SetTargetTransform(Transform transform) {

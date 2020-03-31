@@ -67,8 +67,8 @@ public class TilemapInitialization : MonoBehaviour, IDependentScript, ILoadableS
     }
 
     void InitFloor() {
-        Vector2Int bottomLeft = tilemapInfo.GetBottomLeftCornerTilePosition();
-        Vector2Int topRight = tilemapInfo.GetTopRightCornerTilePosition();
+        Vector3Int bottomLeft = tilemapInfo.GetBottomLeftCornerTilePosition();
+        Vector3Int topRight = tilemapInfo.GetTopRightCornerTilePosition();
         for (int r = bottomLeft.y; r < topRight.y; r++) {
             for (int c = bottomLeft.x; c < topRight.x; c++) {
                 Vector3Int tilePosition = new Vector3Int(c, r, 0);
@@ -85,8 +85,8 @@ public class TilemapInitialization : MonoBehaviour, IDependentScript, ILoadableS
     void InitDoors() {
         List<Door> doors = new List<Door>();
 
-        Vector2Int bottomLeft = tilemapInfo.GetBottomLeftCornerTilePosition();
-        Vector2Int topRight = tilemapInfo.GetTopRightCornerTilePosition();
+        Vector3Int bottomLeft = tilemapInfo.GetBottomLeftCornerTilePosition();
+        Vector3Int topRight = tilemapInfo.GetTopRightCornerTilePosition();
         for (int i = 0; i < tilemapInfo.NumDoors; i++) {
             int randRow = UnityEngine.Random.Range(bottomLeft.y + 1, topRight.y - 1);
             int randCol = UnityEngine.Random.Range(bottomLeft.x + 1, topRight.x - 1);

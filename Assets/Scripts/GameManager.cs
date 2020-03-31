@@ -70,6 +70,8 @@ public class GameManager : MonoBehaviour, IDependentScript
         List<ILoadableScript> dependencies = new List<ILoadableScript>();
         dependencies.Add(ObjectPooler.Instance);
         dependencies.Add(TilemapInitialization.Instance);
+        dependencies.Add(CribManager.Instance);
+        dependencies.Add(BabyManager.Instance);
         ScriptDependencyManager.Instance.UpdateDependencyDicts(this, dependencies);
     }
 

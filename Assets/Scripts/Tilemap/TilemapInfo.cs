@@ -76,16 +76,16 @@ public class TilemapInfo : MonoBehaviour, ILoadableScript
         return this.GetComponent<Tilemap>();
     }
 
-    public Vector2Int GetBottomLeftCornerTilePosition() {
+    public Vector3Int GetBottomLeftCornerTilePosition() {
         int minX = -HouseDimensions.x / 2;
         int minY = -HouseDimensions.y / 2;
-        return new Vector2Int(minX, minY);
+        return new Vector3Int(minX, minY, 0);
     }
 
-    public Vector2Int GetTopRightCornerTilePosition() {
+    public Vector3Int GetTopRightCornerTilePosition() {
         int maxX = HouseDimensions.x / 2;
         int maxY = HouseDimensions.y / 2;
-        return new Vector2Int(maxX, maxY);
+        return new Vector3Int(maxX, maxY, 0);
     }
 
     public Vector3 GetWorldCoordinatesOfTilePosition(Vector3Int tilePosition) {
