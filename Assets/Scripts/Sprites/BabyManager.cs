@@ -24,6 +24,7 @@ public class BabyManager : SpriteManager
     int spawnAmount = 1;
     [SerializeField]
     float spawnDelay = 5.0f;
+    [SerializeField]
     float timeTilSpawn;
     [SerializeField]
     bool shouldSpawn;
@@ -36,18 +37,17 @@ public class BabyManager : SpriteManager
     }
 
     protected override void OnGameStart() {
-        SpawnBabies();
         ResetSpawnCountdown();
+        SpawnBabies();
         shouldSpawn = true;
     }
 
     void Update() {
         if (IsInitialized() && gameManager.IsPlaying && shouldSpawn) {
-            Debug.Log(timeTilSpawn);
             this.timeTilSpawn -= Time.deltaTime;
             if (this.timeTilSpawn < 0) {
-                SpawnBabies();
                 ResetSpawnCountdown();
+                SpawnBabies();
             }    
         }
     }

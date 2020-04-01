@@ -13,18 +13,19 @@ public class Baby : MonoBehaviour, IPooledObject
     // Start is called before the first frame update
     void Start()
     {
-        animator = GetComponent<Animator>();
+        
     }
 
     #region IPooledObject
     public void OnObjectInitiate(SpriteManager sm) {
         babyManager = (BabyManager) sm;
         this.transform.SetParent(sm.transform);
+        animator = GetComponent<Animator>();
     }
 
     public void OnObjectSpawn() {
         SetSpeed(babyManager.BabySpeed);
-        TargetNearestDoor();
+        TargetRandomDoor();
     }
     #endregion
 
