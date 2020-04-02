@@ -10,25 +10,6 @@ public class Baby : MonoBehaviour, IPooledObject
 
     BabyManager babyManager;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    #region IPooledObject
-    public void OnObjectInitiate(SpriteManager sm) {
-        babyManager = (BabyManager) sm;
-        this.transform.SetParent(sm.transform);
-        animator = GetComponent<Animator>();
-    }
-
-    public void OnObjectSpawn() {
-        SetSpeed(babyManager.BabySpeed);
-        TargetRandomDoor();
-    }
-    #endregion
-
     // Update is called once per frame
     void Update()
     {
@@ -41,6 +22,20 @@ public class Baby : MonoBehaviour, IPooledObject
         }
     }
 
+    #region IPooledObject
+    public void OnObjectInitiate(SpriteManager sm) {
+        babyManager = (BabyManager) sm;
+        this.transform.SetParent(sm.transform);
+        animator = GetComponent<Animator>();
+    }
+
+    public void OnObjectSpawn() {
+        SetSpeed(babyManager.BabySpeed);
+        TargetRandomDoor();
+        FaceTargetDoor();
+    }
+    #endregion
+    
     public void SetSpeed(float speed) {
         this.speed = speed;
         animator.SetFloat("Speed", speed);
@@ -75,8 +70,35 @@ public class Baby : MonoBehaviour, IPooledObject
         SetTargetTransform(minDistanceDoor.gameObject.transform);
     }
 
+    void FaceTargetDoor() {
+        Vector3 targetDirection = targetTransform.position - this.transform.position;
+        targetDirection.Normalize();
+        
+        bool facingLeft = targetDirection.x < 0;
+        if (facingLeft) {
+            this.transform.localRotation = Quaternion.Euler(180, 0, 0);
+        }
+        
+        this.transform.right = targetDirection;
+    }
+
     void SetTargetTransform(Transform transform) {
         this.targetTransform = transform;
     }
+
+    #region Collision
+    void OnCollisionEnter2D(Collision2D other) {
+        if (GameManager.Instance.IsPlaying) {
+            if (other.gameObject.GetComponent<Door>() != null) {
+                OnDoorCollision();
+            }
+        }
+    }
+
+    void OnDoorCollision() {
+        //just escape for now (back into the ObjectPool)
+        babyManager.DestroySprite(this.gameObject);
+    }
+    #endregion
 
 }
