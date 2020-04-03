@@ -7,7 +7,6 @@ public class GameManager : MonoBehaviour, IDependentScript
 {
     #region Singleton
     public static GameManager Instance;
-    //reference this only version as MultiplierManager.Instance.SpawnSprite(randPos, UnityEngine.Random.rotation);
     private void Awake() {
         Instance = this;
     }

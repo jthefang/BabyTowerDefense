@@ -59,7 +59,7 @@ public class SpriteManager : MonoBehaviour, ILoadableScript, IDependentScript
         gameManager.OnGameStart += OnGameStart;
         activeSprites = new HashSet<GameObject>();
 
-        if (spriteTag == null) {
+        if (spriteTag == null || spriteTag == "") {
             Debug.LogError(this.GetType().Name + " does not have a sprite tag set.");
         } else if (hasSpriteSpawnBounds) {
             spriteSpawnBounds = new SpriteSpawnBounds(spriteTag);
@@ -68,6 +68,44 @@ public class SpriteManager : MonoBehaviour, ILoadableScript, IDependentScript
 
     protected virtual void OnGameStart() {
         //pass
+    }
+
+    public HashSet<GameObject> GetActiveSprites() {
+        return activeSprites;
+    }
+
+    public GameObject GetNearestActiveSpriteToPosition(Vector3 position) {
+        if (activeSprites == null || activeSprites.Count <= 0) {
+            return null;
+        }
+
+        float minDistanceSoFar = -1;
+        GameObject minDistanceSprite = null;
+        foreach (GameObject spriteObj in activeSprites) {
+            float dist = Vector3.Distance(spriteObj.transform.position, position);
+            bool minDistNotInitialized = minDistanceSoFar < 0;
+            if (minDistNotInitialized || dist <= minDistanceSoFar) {
+                minDistanceSoFar = dist; 
+                minDistanceSprite = spriteObj;
+            }
+        }
+        return minDistanceSprite;
+    }
+
+    public GameObject GetRandomActiveSprite() {
+        if (activeSprites == null || activeSprites.Count <= 0) {
+            return null;
+        }
+
+        int randIdx = UnityEngine.Random.Range(0, activeSprites.Count);
+        int i = 0;
+        foreach (GameObject sprite in activeSprites) {
+            if (i == randIdx) {
+                return sprite;
+            }
+            i++;
+        }
+        return null;
     }
 
     public GameObject SpawnSprite(Vector3 position, Quaternion rotation) {
@@ -82,6 +120,7 @@ public class SpriteManager : MonoBehaviour, ILoadableScript, IDependentScript
             return;
         }
         objectPooler.DeactivateSpriteInPool(sprite);
+        activeSprites.Remove(sprite);
     }
 
     public void DestroyAll() {

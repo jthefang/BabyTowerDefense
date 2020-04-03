@@ -42,55 +42,50 @@ public class Baby : MonoBehaviour, IPooledObject
     }
 
     void TargetRandomDoor() {
-        List<Door> doors = TilemapInfo.Instance.Doors;
-        if (doors == null || doors.Count <= 0) {
+        GameObject randomDoor = DoorManager.Instance.GetRandomActiveSprite();
+        if (randomDoor == null) {
             return;
         }
-
-        Door randDoor = doors[Random.Range(0, doors.Count)];
-        SetTargetTransform(randDoor.gameObject.transform);
+        
+        this.targetTransform = randomDoor.gameObject.transform;
     }
 
     void TargetNearestDoor() {
-        List<Door> doors = TilemapInfo.Instance.Doors;
-        if (doors == null || doors.Count <= 0) {
+        TargetNearestSpriteByManager(DoorManager.Instance);
+    }
+
+    void TargetNearestSpriteByManager(SpriteManager spriteManager) {
+        GameObject minDistanceSprite = spriteManager.GetNearestActiveSpriteToPosition(this.transform.position);
+        if (minDistanceSprite == null) {
             return;
         }
 
-        float minDistanceSoFar = -1;
-        Door minDistanceDoor = doors[0];
-        foreach (Door d in doors) {
-            float dist = Vector3.Distance(d.gameObject.transform.position, this.transform.position);
-            bool minDistNotInitialized = minDistanceSoFar < 0;
-            if (minDistNotInitialized || dist <= minDistanceSoFar) {
-                minDistanceSoFar = dist; 
-                minDistanceDoor = d;
-            }
-        }
-        SetTargetTransform(minDistanceDoor.gameObject.transform);
+        this.targetTransform = minDistanceSprite.transform;
     }
 
     void FaceTargetDoor() {
         Vector3 targetDirection = targetTransform.position - this.transform.position;
         targetDirection.Normalize();
+        //this.transform.right = targetDirection; //rotates baby to face target direction
         
         bool facingLeft = targetDirection.x < 0;
         if (facingLeft) {
-            this.transform.localRotation = Quaternion.Euler(180, 0, 0);
+            this.transform.localRotation = Quaternion.Euler(0, 180, 0);
         }
-        
-        this.transform.right = targetDirection;
-    }
-
-    void SetTargetTransform(Transform transform) {
-        this.targetTransform = transform;
     }
 
     #region Collision
-    void OnCollisionEnter2D(Collision2D other) {
+    void OnTriggerEnter2D(Collider2D other) {
         if (GameManager.Instance.IsPlaying) {
             if (other.gameObject.GetComponent<Door>() != null) {
                 OnDoorCollision();
+                return;
+            } 
+            
+            Roomba roomba = other.gameObject.GetComponent<Roomba>();
+            if (roomba != null) {
+                OnRoombaCollision(roomba);
+                return;
             }
         }
     }
@@ -98,6 +93,14 @@ public class Baby : MonoBehaviour, IPooledObject
     void OnDoorCollision() {
         //just escape for now (back into the ObjectPool)
         babyManager.DestroySprite(this.gameObject);
+    }
+
+    void OnRoombaCollision(Roomba roomba) {
+        //just disappear for now (back into the ObjectPool)
+        bool pickedUpBaby = roomba.PickupBaby(this);
+        if (pickedUpBaby) {
+            babyManager.DestroySprite(this.gameObject);
+        }
     }
     #endregion
 

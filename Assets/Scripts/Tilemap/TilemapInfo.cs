@@ -48,16 +48,6 @@ public class TilemapInfo : MonoBehaviour, ILoadableScript
             return _numDoors;
         }
     }
-    List<Door> _doors;
-    public void SetDoors(List<Door> doors) {
-        this._doors = doors;
-    }
-    // Positions of the doors in world coordinates
-    public List<Door> Doors {
-        get {
-            return _doors;
-        }
-    }
     #endregion
 
     void Start() {
