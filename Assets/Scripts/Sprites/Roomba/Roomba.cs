@@ -8,6 +8,8 @@ public class Roomba : MonoBehaviour
     float speed;
     [SerializeField]
     int maxBabyCapacity;
+    [SerializeField]
+    SoundEffect pickupBabySoundEffect;
 
     Transform targetTransform;
     GameManager gameManager;
@@ -100,6 +102,7 @@ public class Roomba : MonoBehaviour
         }
 
         this._numBabiesPickedUp++;
+        SoundManager.Instance.PlaySoundEffectWithRandomPitchInRange(pickupBabySoundEffect, 0.5f, 1f);
         return true;
     }
     #endregion

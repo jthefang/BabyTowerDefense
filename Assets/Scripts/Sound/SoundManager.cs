@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Random = UnityEngine.Random;
 
 public class SoundManager : MonoBehaviour, ILoadableScript
 {
@@ -32,23 +33,16 @@ public class SoundManager : MonoBehaviour, ILoadableScript
     #endregion
 
     [SerializeField]
-    List<SoundEffect> soundEffects;
-    Dictionary<string, SoundEffect> nameToSoundEffect;
-
-    AudioSource audioSource;
+    AudioSource musicSource;
+    [SerializeField]
+    AudioSource soundFXSource;
     GameManager gameManager;
 
     void Start() {
-        audioSource = this.GetComponent<AudioSource>();
         gameManager = GameManager.Instance;
         gameManager.OnGameStart += OnGameStart;
 
-        InitNameToSoundEffectsDict();
         isInitialized = true;
-    }
-
-    void InitNameToSoundEffectsDict() {
-
     }
 
     void OnGameStart() {
@@ -56,15 +50,28 @@ public class SoundManager : MonoBehaviour, ILoadableScript
     }
 
     public void PlayMainTheme() {
-        audioSource.Play();
+        musicSource.Play();
+    }
+
+    public void PlaySoundEffect(SoundEffect soundEffect) {
+        if (soundEffect == null) {
+            return;
+        }
+        
+        soundFXSource.volume = soundEffect.volume;
+        soundFXSource.pitch = soundEffect.pitch;
+        soundFXSource.PlayOneShot(soundEffect.sound);
+    }
+
+    public void PlaySoundEffectWithRandomPitchInRange(SoundEffect soundEffect, float minPitch, float maxPitch) {
+        if (soundEffect == null) {
+            return;
+        }
+        
+        soundFXSource.volume = soundEffect.volume;
+        soundFXSource.pitch = Random.Range(minPitch, maxPitch);
+        soundFXSource.PlayOneShot(soundEffect.sound);
     }
 
 }
 
-[Serializable]
-public class SoundEffect {
-    [SerializeField]
-    string name;
-    [SerializeField]
-    AudioClip audioClip; 
-}
